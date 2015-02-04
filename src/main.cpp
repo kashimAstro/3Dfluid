@@ -5,7 +5,7 @@
 
 #define IX(i,j,k) ((i)+(M+2)*(j) + (M+2)*(N+2)*(k)) 
 #define MAX(a,b)  (((a) > (b)) ? (a) : (b))
-#define SIZE 32
+#define SIZE 32 
 
 class xApp : public ofBaseApp{
 
@@ -32,21 +32,10 @@ class xApp : public ofBaseApp{
 		ofxSlider<float> source_alpha;
 		ofxSlider<float> size_cube;
 
-		ofxSlider<float> XforcePosX; 
-		ofxSlider<float> XforcePosY; 
-		ofxSlider<float> XforcePosZ; 
-
-		ofxSlider<float> YforcePosX; 
-		ofxSlider<float> YforcePosY; 
-		ofxSlider<float> YforcePosZ; 
-
-		ofxSlider<float> ZforcePosX; 
-		ofxSlider<float> ZforcePosY; 
-		ofxSlider<float> ZforcePosZ; 
-
 		ofxSlider<float> sourcePosX; 
 		ofxSlider<float> sourcePosY; 
 		ofxSlider<float> sourcePosZ; 
+		ofImage img;
 
 		int addforce[3] = {0, 0, 0};
 		int addsource = 0;
@@ -134,12 +123,12 @@ class xApp : public ofBaseApp{
 		                                glColor4f ( d100, d100, d100, source_alpha ); glVertex3f ( x+h, y, z );
 		                                glColor4f ( d000, d000, d000, source_alpha ); glVertex3f ( x, y, z );
 
-                                		glColor4f ( d011, d011, d011, source_alpha ); glVertex3f ( x, y+h, z+h);
+                /*                		glColor4f ( d011, d011, d011, source_alpha ); glVertex3f ( x, y+h, z+h);
 		                                glColor4f ( d010, d010, d010, source_alpha ); glVertex3f ( x, y+h, z );
 		                                glColor4f ( d000, d000, d000, source_alpha ); glVertex3f ( x, y, z );
 		                                glColor4f ( d001, d001, d001, source_alpha ); glVertex3f ( x, y, z+h );
 
-                		                /*glColor4f ( d100, d100, d100, source_alpha ); glVertex3f ( x+h, y, z );
+                		                glColor4f ( d100, d100, d100, source_alpha ); glVertex3f ( x+h, y, z );
 		                                glColor4f ( d000, d000, d000, source_alpha ); glVertex3f ( x, y, z );
 		                                glColor4f ( d001, d001, d001, source_alpha ); glVertex3f ( x, y, z+h );
 		                                glColor4f ( d101, d101, d101, source_alpha ); glVertex3f ( x+h, y, z+h );
@@ -161,27 +150,27 @@ class xApp : public ofBaseApp{
 		        }
 		        if(addforce[0]==1) // x
 		        {
-                		i=2  +XforcePosX,
-		                j=N/2+XforcePosY;
-		                k=O/2+XforcePosZ;
+                		i=2  ,
+		                j=N/2;
+		                k=O/2;
 		                if ( i<1 || i>M || j<1 || j>N || k <1 || k>O) return;
                 		u[IX(i,j,k)] = force*10;
 		                addforce[0] = 0;
 		        }
 		        if(addforce[1]==1)
 		        {
-		                i=M/2 +YforcePosX,
-		                j=2   +YforcePosY;
-		                k=O/2 +YforcePosZ;
+		                i=M/2 ,
+		                j=2   ;
+		                k=O/2 ;
 		                if ( i<1 || i>M || j<1 || j>N || k <1 || k>O) return;
 		                v[IX(i,j,k)] = force*10;
 		                addforce[1] = 0;
 		        }
 		        if(addforce[2]==1) // y
 		        {
-		                i=M/2+ZforcePosX,
-		                j=N/2+ZforcePosY;
-		                k=2+ZforcePosZ;
+		                i=M/2,
+		                j=N/2;
+		                k=2;
 		                if ( i<1 || i>M || j<1 || j>N || k <1 || k>O) return;
 		                w[IX(i,j,k)] = force*10;
 		                addforce[2] = 0;
@@ -244,24 +233,14 @@ class xApp : public ofBaseApp{
 			gui.add(drawAbstacle.setup("draw abstacle",false));
 			gui.add(drawAxis.setup("draw Axis",true));
 
-			gui.add(XforcePosX.setup("x force posX", 0,-10,SIZE));
-			gui.add(XforcePosY.setup("x force posY", 0,-10,SIZE));
-			gui.add(XforcePosZ.setup("x force posZ", 0,-10,SIZE));
-
-			gui.add(YforcePosX.setup("y force posX", 0,-10,SIZE));
-			gui.add(YforcePosY.setup("y force posY", 0,-10,SIZE));
-			gui.add(YforcePosZ.setup("y force posZ", 0,-10,SIZE));
-
-			gui.add(ZforcePosX.setup("z force posX", 0,-10,SIZE));
-			gui.add(ZforcePosY.setup("z force posY", 0,-10,SIZE));
-			gui.add(ZforcePosZ.setup("z force posZ", 0,-10,SIZE));
-
 			gui.add(sourcePosX.setup("source posX", 0,-10,SIZE));
 			gui.add(sourcePosY.setup("source posY", 0,-10,SIZE));
 			gui.add(sourcePosZ.setup("source posZ", 0,-10,SIZE));
 
+			ofDisableArbTex();
+			img.loadImage("texture.jpg");
 			ofBoxPrimitive box;
-			box.set(0.2);
+			box.set(3.8);
 			mesh = box.getMesh();
 
 		}
@@ -291,16 +270,19 @@ class xApp : public ofBaseApp{
 			glDisable(GL_BLEND);
 		        glDisable(GL_ALPHA_TEST);
 
+		        glPopMatrix();
+			if( drawAxis ){	ofDrawAxis(15); }
+
 			if( drawAbstacle ) {
 				ofPushStyle();
 				ofSetColor(0);
-				ofTranslate(.8,.6,.5);
+				ofTranslate(5.8,5.6,8.5);
+				img.getTextureReference().bind();
 				mesh.draw();
+				img.getTextureReference().unbind();
 				ofPopStyle();
 			}
 
-		        glPopMatrix();
-			if( drawAxis ){	ofDrawAxis(15); }
 			camera.end();
 			ofDisableDepthTest();
 			gui.draw();
